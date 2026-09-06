@@ -1,0 +1,7 @@
+from algorithms.parser import parsear_problema_completo, parsear_funcion_objetivo, parsear_restriccion
+from algorithms.validaciones import validar_problema
+from algorithms.forma_estandar import convertir_a_forma_estandar, ProblemaEstandar
+from algorithms.simplex import AlgoritmoSimplex
+from algorithms.dos_fases import DosFases
+from algorithms.gran_m import GranM
+from algorithms.dualidad import AlgoritmoDualidad
