@@ -100,12 +100,12 @@ class MainWindow(ctk.CTk):
         )
         self._panel_inicio_simple.grid(row=0, column=0, sticky="nsew")
 
-    def _ejecutar_simplex(self, problema: Problema, metodo: str):
+    def _ejecutar_simplex(self, problema: Problema, metodo: str, modo_simplex: str = "tabular"):
         self._panel_inicio_simple.grid_forget()
         self._duality_view.grid_forget()
         self._problema_actual = problema
         self._simplex_view.grid(row=0, column=0, sticky="nsew")
-        self._simplex_view.resolver(problema, metodo)
+        self._simplex_view.resolver(problema, metodo, modo_simplex)
 
     def _ejecutar_dualidad(self, problema: Problema):
         self._panel_inicio_simple.grid_forget()

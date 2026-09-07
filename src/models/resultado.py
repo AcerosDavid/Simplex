@@ -65,6 +65,7 @@ class Iteracion:
     operaciones: List[OperacionFila] = field(default_factory=list)
     explicacion: str = ""
     fase: Optional[int] = None
+    modo_algebraico: bool = False
 
 
 @dataclass

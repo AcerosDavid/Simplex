@@ -31,6 +31,7 @@ class ProblemInputPanel(ctk.CTkFrame):
         self._on_solve_simplex = on_solve_simplex
         self._on_solve_duality = on_solve_duality
         self._metodo = tk.StringVar(value="dos_fases")
+        self._modo_simplex = tk.StringVar(value="tabular")
         self._setup_ui()
 
     # ──────────────────────────────────────────────────────────────────────
@@ -128,6 +129,30 @@ class ProblemInputPanel(ctk.CTkFrame):
                 hover_color=EMERALD_DARK,
             ).pack(side="left", padx=6, pady=6)
 
+        # ── Modo de evaluación de la fila Z ────────────────────────────────
+        modo_frame = ctk.CTkFrame(card, fg_color=BG_CONTENT, corner_radius=8)
+        modo_frame.grid(row=5, column=0, sticky="w", padx=16, pady=(0, 10))
+
+        ctk.CTkLabel(
+            modo_frame,
+            text="Modo Simplex:",
+            font=ctk.CTkFont(family=FONT_FAMILY_UI, size=FONT_SIZE_SM),
+            text_color=TEXT_SECONDARY,
+        ).pack(side="left", padx=(8, 10))
+
+        for texto, valor in [
+            ("Tabular (Cj-Zj)", "tabular"),
+            ("Algebraico (-Cj)", "algebraico"),
+        ]:
+            ctk.CTkRadioButton(
+                modo_frame, text=texto,
+                variable=self._modo_simplex, value=valor,
+                font=ctk.CTkFont(family=FONT_FAMILY_UI, size=FONT_SIZE_SM),
+                text_color=TEXT_PRIMARY,
+                fg_color=EMERALD,
+                hover_color=EMERALD_DARK,
+            ).pack(side="left", padx=6, pady=6)
+
         # ── Botones de acción ─────────────────────────────────────────────
         btn_card = ctk.CTkFrame(self, fg_color=BG_CARD, corner_radius=10,
                                  border_width=1, border_color=BORDER_LIGHT)
@@ -211,7 +236,7 @@ class ProblemInputPanel(ctk.CTkFrame):
     def _resolver_simplex(self):
         p = self._parsear_y_validar()
         if p:
-            self._on_solve_simplex(p, self._metodo.get())
+            self._on_solve_simplex(p, self._metodo.get(), self._modo_simplex.get())
 
     def _resolver_dualidad(self):
         p = self._parsear_y_validar()

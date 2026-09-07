@@ -55,9 +55,11 @@ class AlgoritmoSimplex:
             print(it.explicacion)
     """
 
-    def __init__(self, problema: Problema) -> None:
+    def __init__(self, problema: Problema, modo_algebraico: bool = False) -> None:
         self.problema = problema
+        self.modo_algebraico = modo_algebraico
         self.resultado = Resultado(metodo="Simplex Primal")
+        self._cj_original: Optional[List[float]] = None
 
     # ──────────────────────────────────────────────────────────────────────
     #  Punto de entrada público
@@ -251,10 +253,17 @@ class AlgoritmoSimplex:
                         var = v
                         break
             if var is not None and var.tipo == TipoVariable.ARTIFICIAL:
-                if pe.tipo == TipoOptimizacion.MAXIMIZAR:
-                    cj[j] = -M
+                if self.modo_algebraico:
+                    # En modo algebraico, los signos se invierten
+                    if pe.tipo == TipoOptimizacion.MAXIMIZAR:
+                        cj[j] = M   # negado de -M
+                    else:
+                        cj[j] = -M  # negado de +M
                 else:
-                    cj[j] = M
+                    if pe.tipo == TipoOptimizacion.MAXIMIZAR:
+                        cj[j] = -M
+                    else:
+                        cj[j] = M
                 # Actualizar coef_base si la artificial está en la base
                 for k, bv in enumerate(base_vars):
                     if bv == nombre:
@@ -409,6 +418,12 @@ class AlgoritmoSimplex:
             base_vars.append(nombre_base)
             base_coefs.append(pe.coef_objetivo.get(nombre_base, 0.0))
 
+        # Modo Algebraico: negar coeficientes de la función objetivo
+        if self.modo_algebraico:
+            self._cj_original = list(cj)
+            cj = [-c for c in cj]
+            base_coefs = [-c for c in base_coefs]
+
         return tableau, nombres_cols, cj, base_vars, base_coefs
 
     # ──────────────────────────────────────────────────────────────────────
@@ -450,18 +465,30 @@ class AlgoritmoSimplex:
         """
         Verifica si se cumple el criterio de optimalidad.
 
-        Maximización: óptimo cuando todos Cj-Zj <= 0 (excluir RHS)
-        Minimización: óptimo cuando todos Cj-Zj >= 0 (excluir RHS)
+        Modo Tabular:
+            Maximización: óptimo cuando todos Cj-Zj <= 0
+            Minimización: óptimo cuando todos Cj-Zj >= 0
+        Modo Algebraico (Cj negados):
+            Maximización: óptimo cuando todos Cj-Zj >= 0
+            Minimización: óptimo cuando todos Cj-Zj <= 0
         """
         n_vars = len(cj_zj) - 1  # excluir RHS
         valores = cj_zj[:n_vars]
 
         if pe.tipo == TipoOptimizacion.MAXIMIZAR:
-            if all(v <= _EPSILON for v in valores):
-                return EstadoSolucion.OPTIMA
+            if self.modo_algebraico:
+                if all(v >= -_EPSILON for v in valores):
+                    return EstadoSolucion.OPTIMA
+            else:
+                if all(v <= _EPSILON for v in valores):
+                    return EstadoSolucion.OPTIMA
         else:
-            if all(v >= -_EPSILON for v in valores):
-                return EstadoSolucion.OPTIMA
+            if self.modo_algebraico:
+                if all(v <= _EPSILON for v in valores):
+                    return EstadoSolucion.OPTIMA
+            else:
+                if all(v >= -_EPSILON for v in valores):
+                    return EstadoSolucion.OPTIMA
 
         return EstadoSolucion.SIN_RESOLVER
 
@@ -475,19 +502,33 @@ class AlgoritmoSimplex:
         """
         Regla de Dantzig: selecciona la variable entrante.
 
-        Maximización: columna con mayor Cj-Zj positivo.
-        Minimización: columna con menor Cj-Zj negativo (más negativo).
+        Modo Tabular:
+            Maximización: columna con mayor Cj-Zj positivo.
+            Minimización: columna con menor Cj-Zj negativo (más negativo).
+        Modo Algebraico (Cj negados):
+            Maximización: columna con Cj-Zj más negativo (mínimo).
+            Minimización: columna con Cj-Zj más positivo (máximo).
         """
         n_vars = len(cj_zj) - 1  # excluir RHS
 
         if pe.tipo == TipoOptimizacion.MAXIMIZAR:
-            col = int(np.argmax(cj_zj[:n_vars]))
-            if cj_zj[col] <= _EPSILON:
-                return None
+            if self.modo_algebraico:
+                col = int(np.argmin(cj_zj[:n_vars]))
+                if cj_zj[col] >= -_EPSILON:
+                    return None
+            else:
+                col = int(np.argmax(cj_zj[:n_vars]))
+                if cj_zj[col] <= _EPSILON:
+                    return None
         else:
-            col = int(np.argmin(cj_zj[:n_vars]))
-            if cj_zj[col] >= -_EPSILON:
-                return None
+            if self.modo_algebraico:
+                col = int(np.argmax(cj_zj[:n_vars]))
+                if cj_zj[col] <= _EPSILON:
+                    return None
+            else:
+                col = int(np.argmin(cj_zj[:n_vars]))
+                if cj_zj[col] >= -_EPSILON:
+                    return None
 
         return col
 
@@ -618,7 +659,17 @@ class AlgoritmoSimplex:
         self.resultado.valores_variables = valores
 
         # Valor objetivo = Zj de la columna RHS
-        cb = np.array([pe.coef_objetivo.get(bv, 0.0) for bv in base_vars])
+        # En modo algebraico, usar los coeficientes originales (no negados)
+        if self.modo_algebraico and self._cj_original is not None:
+            cj_obj = self._cj_original
+        else:
+            cj_obj = [pe.coef_objetivo.get(bv, 0.0) for bv in base_vars]
+            cb = np.array(cj_obj)
+            z = float(cb @ tableau[:, -1])
+            self.resultado.valor_objetivo = limpiar_cero(z)
+            return
+
+        cb = np.array([cj_obj[nombres_vars.index(bv)] if bv in nombres_vars else pe.coef_objetivo.get(bv, 0.0) for bv in base_vars])
         z = float(cb @ tableau[:, -1])
         self.resultado.valor_objetivo = limpiar_cero(z)
 
@@ -663,6 +714,7 @@ class AlgoritmoSimplex:
         it.cj = list(cj) + [0.0]  # incluir columna RHS
         it.variables_base = list(base_vars)
         it.coefs_base = list(base_coefs)
+        it.modo_algebraico = self.modo_algebraico
         return it
 
     # ──────────────────────────────────────────────────────────────────────
@@ -680,6 +732,23 @@ class AlgoritmoSimplex:
             "",
             f"  Problema: {pe.problema_original.funcion_objetivo_str()}",
             "",
+        ]
+        if self.modo_algebraico:
+            lines += [
+                "  Modo: ALGEBRAICO",
+                "  La función objetivo se despeja igualando a cero:",
+                f"    Z",
+            ]
+            for nombre, coef in pe.coef_objetivo.items():
+                if coef != 0:
+                    signo = "-" if coef > 0 else "+"
+                    lines[-1] += f" {signo} {abs(coef)}{nombre}"
+            lines[-1] += " = 0"
+            lines += [
+                "  Los coeficientes se multiplican por -1 en la tabla.",
+                "",
+            ]
+        lines += [
             "  Conversión a Forma Estándar:",
         ]
         for paso in pe.pasos_conversion:
@@ -696,12 +765,21 @@ class AlgoritmoSimplex:
                 f"  {'-M' if pe.tipo == TipoOptimizacion.MAXIMIZAR else '+M'} en la función objetivo.",
                 "",
             ]
-        lines += [
-            "  Nota: Cj = coeficientes de la función objetivo.",
-            "        Cb = coeficientes de las variables en la base.",
-            "        Zj = Σ(Cb · columna j).",
-            "        Cj - Zj = índice de mejora de cada variable.",
-        ]
+        if self.modo_algebraico:
+            lines += [
+                "  Nota: Cj = coeficientes de la función objetivo (negados).",
+                "        Cb = coeficientes de las variables en la base (negados).",
+                "        Zj = Σ(Cb · columna j).",
+                "        Cj - Zj = índice de mejora.",
+                "        Variable entrante: Cj-Zj más negativo (Max) o más positivo (Min).",
+            ]
+        else:
+            lines += [
+                "  Nota: Cj = coeficientes de la función objetivo.",
+                "        Cb = coeficientes de las variables en la base.",
+                "        Zj = Σ(Cb · columna j).",
+                "        Cj - Zj = índice de mejora de cada variable.",
+            ]
         return "\n".join(lines)
 
     def _explicacion_iteracion(
@@ -730,16 +808,28 @@ class AlgoritmoSimplex:
 
         # Variable entrante
         if it.variable_entrante:
-            if pe.tipo == TipoOptimizacion.MAXIMIZAR:
-                lines.append("  2. Selección de variable entrante (Max Cj-Zj > 0):")
-                lines.append(
-                    f"     El mayor valor positivo de Cj-Zj corresponde a {it.variable_entrante}."
-                )
+            if self.modo_algebraico:
+                if pe.tipo == TipoOptimizacion.MAXIMIZAR:
+                    lines.append("  2. Selección de variable entrante (Min Cj-Zj < 0):")
+                    lines.append(
+                        f"     El valor más negativo de Cj-Zj corresponde a {it.variable_entrante}."
+                    )
+                else:
+                    lines.append("  2. Selección de variable entrante (Max Cj-Zj > 0):")
+                    lines.append(
+                        f"     El mayor valor positivo de Cj-Zj corresponde a {it.variable_entrante}."
+                    )
             else:
-                lines.append("  2. Selección de variable entrante (Min Cj-Zj < 0):")
-                lines.append(
-                    f"     El valor más negativo de Cj-Zj corresponde a {it.variable_entrante}."
-                )
+                if pe.tipo == TipoOptimizacion.MAXIMIZAR:
+                    lines.append("  2. Selección de variable entrante (Max Cj-Zj > 0):")
+                    lines.append(
+                        f"     El mayor valor positivo de Cj-Zj corresponde a {it.variable_entrante}."
+                    )
+                else:
+                    lines.append("  2. Selección de variable entrante (Min Cj-Zj < 0):")
+                    lines.append(
+                        f"     El valor más negativo de Cj-Zj corresponde a {it.variable_entrante}."
+                    )
             lines.append(f"     → {it.variable_entrante} ENTRA a la base.")
             lines.append("")
 
@@ -790,22 +880,40 @@ class AlgoritmoSimplex:
         ]
 
         if estado == EstadoSolucion.OPTIMA:
-            if pe.tipo == TipoOptimizacion.MAXIMIZAR:
-                lines += [
-                    "  ✓ Condición de optimalidad cumplida.",
-                    "",
-                    "  No existen valores positivos en Cj - Zj.",
-                    "  Por lo tanto, ninguna variable no básica puede",
-                    "  mejorar el valor de la función objetivo.",
-                    "  La solución actual es ÓPTIMA.",
-                ]
+            if self.modo_algebraico:
+                if pe.tipo == TipoOptimizacion.MAXIMIZAR:
+                    lines += [
+                        "  ✓ Condición de optimalidad cumplida (Modo Algebraico).",
+                        "",
+                        "  No existen valores negativos en Cj - Zj.",
+                        "  Por lo tanto, ninguna variable no básica puede",
+                        "  mejorar el valor de la función objetivo.",
+                        "  La solución actual es ÓPTIMA.",
+                    ]
+                else:
+                    lines += [
+                        "  ✓ Condición de optimalidad cumplida (Modo Algebraico).",
+                        "",
+                        "  No existen valores positivos en Cj - Zj.",
+                        "  La solución actual es ÓPTIMA.",
+                    ]
             else:
-                lines += [
-                    "  ✓ Condición de optimalidad cumplida.",
-                    "",
-                    "  No existen valores negativos en Cj - Zj.",
-                    "  Por lo tanto, la solución actual es ÓPTIMA.",
-                ]
+                if pe.tipo == TipoOptimizacion.MAXIMIZAR:
+                    lines += [
+                        "  ✓ Condición de optimalidad cumplida.",
+                        "",
+                        "  No existen valores positivos en Cj - Zj.",
+                        "  Por lo tanto, ninguna variable no básica puede",
+                        "  mejorar el valor de la función objetivo.",
+                        "  La solución actual es ÓPTIMA.",
+                    ]
+                else:
+                    lines += [
+                        "  ✓ Condición de optimalidad cumplida.",
+                        "",
+                        "  No existen valores negativos en Cj - Zj.",
+                        "  Por lo tanto, la solución actual es ÓPTIMA.",
+                    ]
         elif estado == EstadoSolucion.ILIMITADO:
             lines += [
                 "  ⚠ Problema ILIMITADO.",

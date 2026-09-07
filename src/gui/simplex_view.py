@@ -92,7 +92,7 @@ class SimplexView(ctk.CTkFrame):
     #  API pública
     # ──────────────────────────────────────────────────────────────────────
 
-    def resolver(self, problema: Problema, metodo: str = "dos_fases"):
+    def resolver(self, problema: Problema, metodo: str = "dos_fases", modo_simplex: str = "tabular"):
         # Forma estándar
         pe = convertir_a_forma_estandar(problema)
         self._txt_estandar.configure(state="normal")
@@ -102,10 +102,14 @@ class SimplexView(ctk.CTkFrame):
         self._txt_estandar.configure(state="disabled")
 
         # Resolver
+        modo_algebraico = (modo_simplex == "algebraico")
         if pe.tiene_artificiales:
-            solver = GranM(problema) if metodo == "gran_m" else DosFases(problema)
+            if metodo == "gran_m":
+                solver = GranM(problema)
+            else:
+                solver = DosFases(problema)
         else:
-            solver = AlgoritmoSimplex(problema)
+            solver = AlgoritmoSimplex(problema, modo_algebraico=modo_algebraico)
 
         resultado = solver.resolver()
         self._resultado = resultado
