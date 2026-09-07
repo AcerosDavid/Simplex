@@ -103,7 +103,7 @@ class ResultsView(ctk.CTkFrame):
         estado = resultado.estado
         ins = self._txt.insert  # alias
 
-        sep = "─" * 48
+        sep = ""
 
         if estado in (EstadoSolucion.OPTIMA, EstadoSolucion.MULTIPLES):
             if estado == EstadoSolucion.OPTIMA:

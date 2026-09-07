@@ -326,22 +326,18 @@ class DosFases:
     def _explicacion_fase(self, fase, tipo_opt):
         if fase == 1:
             return (
-                "═" * 55 + "\n"
-                "  FASE I — Encontrar solución factible\n"
-                "═" * 55 + "\n\n"
+                "  FASE I - Encontrar solucion factible\n\n"
                 "  Se construye un problema auxiliar:\n"
-                "  Min W = Σ (variables artificiales)\n\n"
-                "  Si W* = 0 al terminar → existe solución factible.\n"
-                "  Si W* > 0 → el problema original es INFACTIBLE.\n"
+                "  Min W = Suma (variables artificiales)\n\n"
+                "  Si W* = 0 al terminar -> existe solucion factible.\n"
+                "  Si W* > 0 -> el problema original es INFACTIBLE.\n"
             )
         else:
             return (
-                "═" * 55 + "\n"
-                "  FASE II — Optimizar función objetivo original\n"
-                "═" * 55 + "\n\n"
-                "  Se recupera la función objetivo original.\n"
+                "  FASE II - Optimizar funcion objetivo original\n\n"
+                "  Se recupera la funcion objetivo original.\n"
                 "  Las variables artificiales se eliminan del tableau.\n"
-                "  Se continúa el Simplex desde la base factible de Fase I.\n"
+                "  Se continua el Simplex desde la base factible de Fase I.\n"
             )
 
     def _explicacion_pivote(self, var_ent, var_sal, elem_piv, razones, base_vars, nombres_cols, tableau, tipo_opt):

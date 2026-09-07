@@ -131,9 +131,7 @@ class AlgoritmoDualidad:
         primal = self.primal
         pasos: List[str] = []
 
-        pasos.append("=" * 60)
-        pasos.append("  CONSTRUCCIÓN DEL PROBLEMA DUAL")
-        pasos.append("=" * 60)
+        pasos.append("  CONSTRUCCION DEL PROBLEMA DUAL")
         pasos.append("")
         pasos.append("  PROBLEMA PRIMAL:")
         pasos.append(f"  {primal.funcion_objetivo_str()}")
@@ -340,9 +338,7 @@ class AlgoritmoDualidad:
 
         if cumple:
             msg = (
-                "=" * 55 + "\n"
-                "  TEOREMA DE DUALIDAD FUERTE VERIFICADO\n"
-                "=" * 55 + "\n\n"
+                "  TEOREMA DE DUALIDAD FUERTE VERIFICADO\n\n"
                 f"  Z* (primal) = {format_number(z)}\n"
                 f"  W* (dual)   = {format_number(w)}\n\n"
                 "  Z* = W*\n\n"
@@ -351,9 +347,7 @@ class AlgoritmoDualidad:
             )
         else:
             msg = (
-                "=" * 55 + "\n"
-                "  DUALIDAD FUERTE NO VERIFICADA\n"
-                "=" * 55 + "\n\n"
+                "  DUALIDAD FUERTE NO VERIFICADA\n\n"
                 f"  Z* (primal) = {format_number(z)}\n"
                 f"  W* (dual)   = {format_number(w)}\n\n"
                 f"  Diferencia = {format_number(abs(z - w))}\n\n"
@@ -437,9 +431,7 @@ class AlgoritmoDualidad:
     def generar_explicacion_teoremas(self) -> str:
         """Genera la explicacion educativa de los teoremas de dualidad."""
         lines = [
-            "=" * 60,
             "  TEOREMAS DE DUALIDAD",
-            "=" * 60,
             "",
             "  1. DUALIDAD DEBIL",
             "  -----------------",

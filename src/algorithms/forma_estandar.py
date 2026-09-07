@@ -79,7 +79,6 @@ def convertir_a_forma_estandar(problema: Problema) -> ProblemaEstandar:
 
     pasos: List[str] = []
     pasos.append(f"Problema original: {problema.funcion_objetivo_str()}")
-    pasos.append("─" * 50)
     pasos.append("Conversión a Forma Estándar:")
     pasos.append("")
 

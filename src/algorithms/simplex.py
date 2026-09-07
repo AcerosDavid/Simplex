@@ -726,9 +726,7 @@ class AlgoritmoSimplex:
     ) -> str:
         """Genera el texto explicativo de la tabla inicial."""
         lines = [
-            "═" * 55,
-            "  TABLA INICIAL — Iteración 0",
-            "═" * 55,
+            "  TABLA INICIAL - Iteracion 0",
             "",
             f"  Problema: {pe.problema_original.funcion_objetivo_str()}",
             "",
@@ -790,9 +788,7 @@ class AlgoritmoSimplex:
     ) -> str:
         """Genera la explicación detallada de una iteración."""
         lines = [
-            "═" * 55,
-            f"  ITERACIÓN {it.numero}",
-            "═" * 55,
+            f"  ITERACION {it.numero}",
             "",
             "  1. Calcular Cj - Zj:",
         ]
@@ -873,9 +869,7 @@ class AlgoritmoSimplex:
     ) -> str:
         """Genera la explicación de la condición de parada."""
         lines = [
-            "═" * 55,
-            f"  ITERACIÓN {it.numero} — CONDICIÓN DE PARADA",
-            "═" * 55,
+            f"  ITERACION {it.numero} - CONDICION DE PARADA",
             "",
         ]
 

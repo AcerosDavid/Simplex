@@ -118,10 +118,8 @@ class DualityView(ctk.CTkFrame):
         self._set_text(self._txt_construccion, "\n".join(rd.pasos_construccion))
         self._txt_construccion.configure(state="normal")
         self._txt_construccion.insert("end", "\n\n")
-        self._txt_construccion.insert("end", "=" * 55 + "\n")
         self._txt_construccion.insert("end",
-            "  TABLA DE CORRESPONDENCIA PRIMAL <-> DUAL\n")
-        self._txt_construccion.insert("end", "=" * 55 + "\n\n")
+            "  TABLA DE CORRESPONDENCIA PRIMAL <-> DUAL\n\n")
         for izq, der in rd.correspondencia.filas:
             self._txt_construccion.insert(
                 "end", f"  {izq:<38} {der}\n")
@@ -138,9 +136,8 @@ class DualityView(ctk.CTkFrame):
         hc = rd.holgura_complementaria
         if hc.condicion_yi:
             lines += [
-                "=" * 50,
                 "  HOLGURA COMPLEMENTARIA",
-                "=" * 50, "",
+                "",
                 "  Condiciones sobre variables duales (y_i):",
             ]
             lines.extend(hc.condicion_yi)
@@ -161,9 +158,7 @@ class DualityView(ctk.CTkFrame):
         if rd.valor_primal is not None and rd.valor_dual is not None:
             lines += [
                 "",
-                "=" * 50,
                 "  COMPARACION",
-                "=" * 50,
                 f"  Z* primal = {format_number(rd.valor_primal)}",
                 f"  W* dual   = {format_number(rd.valor_dual)}",
                 f"  Dualidad fuerte: {'SI' if rd.dualidad_fuerte else 'NO'}",

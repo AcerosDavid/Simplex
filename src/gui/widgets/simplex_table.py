@@ -92,7 +92,7 @@ class SimplexTableWidget(ctk.CTkFrame):
         modo_r = 0
         lbl_modo = tk.Label(
             self._inner,
-            text="Modo Algebraico  (Fila Z en tableau)" if es_algebraico else "Modo Tabular  (Cj-Zj abajo)",
+            text="Modo Algebraico  (Fila Z en tabla)" if es_algebraico else "Modo Tabular  (Cj-Zj abajo)",
             bg=BG_CARD,
             fg=EMERALD_DARK if es_algebraico else SKY_DARK,
             font=(FONT_FAMILY_MONO, 9, "bold"),
