@@ -105,9 +105,9 @@ class SimplexView(ctk.CTkFrame):
         modo_algebraico = (modo_simplex == "algebraico")
         if pe.tiene_artificiales:
             if metodo == "gran_m":
-                solver = GranM(problema)
+                solver = GranM(problema, modo_algebraico=modo_algebraico)
             else:
-                solver = DosFases(problema)
+                solver = DosFases(problema, modo_algebraico=modo_algebraico)
         else:
             solver = AlgoritmoSimplex(problema, modo_algebraico=modo_algebraico)
 

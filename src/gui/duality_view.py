@@ -108,8 +108,9 @@ class DualityView(ctk.CTkFrame):
     #  API pública
     # ──────────────────────────────────────────────────────────────────────
 
-    def resolver(self, problema: Problema):
-        algo = AlgoritmoDualidad(problema)
+    def resolver(self, problema: Problema, modo_simplex: str = "tabular"):
+        modo_algebraico = (modo_simplex == "algebraico")
+        algo = AlgoritmoDualidad(problema, modo_algebraico=modo_algebraico)
         rd   = algo.construir_y_resolver()
         self._rd = rd
 

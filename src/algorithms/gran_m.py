@@ -23,9 +23,10 @@ class GranM:
         resultado = solver.resolver()
     """
 
-    def __init__(self, problema: Problema, valor_m: float = 1e6) -> None:
+    def __init__(self, problema: Problema, valor_m: float = 1e6, modo_algebraico: bool = False) -> None:
         self.problema = problema
         self.valor_m = valor_m
+        self.modo_algebraico = modo_algebraico
         self._resultado: Resultado = Resultado(metodo="Gran M")
 
     def resolver(self) -> Resultado:
@@ -33,7 +34,7 @@ class GranM:
         from config.config import APP_CONFIG
         APP_CONFIG.big_m_value = self.valor_m
 
-        solver = AlgoritmoSimplex(self.problema)
+        solver = AlgoritmoSimplex(self.problema, modo_algebraico=self.modo_algebraico)
         resultado = solver.resolver()
         resultado.metodo = f"Gran M (M = {self.valor_m:.0e})"
         return resultado

@@ -113,8 +113,9 @@ class AlgoritmoDualidad:
 
     _EPSILON = 1e-8
 
-    def __init__(self, primal: Problema) -> None:
+    def __init__(self, primal: Problema, modo_algebraico: bool = False) -> None:
         self.primal = primal
+        self.modo_algebraico = modo_algebraico
 
     # ──────────────────────────────────────────────────────────────────────
     #  API pública
@@ -298,9 +299,9 @@ class AlgoritmoDualidad:
         from algorithms.forma_estandar import convertir_a_forma_estandar
         pe = convertir_a_forma_estandar(self.primal)
         if pe.tiene_artificiales:
-            solver = DosFases(self.primal)
+            solver = DosFases(self.primal, modo_algebraico=self.modo_algebraico)
         else:
-            solver = AlgoritmoSimplex(self.primal)
+            solver = AlgoritmoSimplex(self.primal, modo_algebraico=self.modo_algebraico)
         return solver.resolver()
 
     def resolver_dual(self, dual: Problema) -> Resultado:
@@ -308,9 +309,9 @@ class AlgoritmoDualidad:
         from algorithms.forma_estandar import convertir_a_forma_estandar
         pe = convertir_a_forma_estandar(dual)
         if pe.tiene_artificiales:
-            solver = DosFases(dual)
+            solver = DosFases(dual, modo_algebraico=self.modo_algebraico)
         else:
-            solver = AlgoritmoSimplex(dual)
+            solver = AlgoritmoSimplex(dual, modo_algebraico=self.modo_algebraico)
         return solver.resolver()
 
     def verificar_dualidad_fuerte(

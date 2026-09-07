@@ -241,7 +241,7 @@ class ProblemInputPanel(ctk.CTkFrame):
     def _resolver_dualidad(self):
         p = self._parsear_y_validar()
         if p:
-            self._on_solve_duality(p)
+            self._on_solve_duality(p, self._modo_simplex.get())
 
     def _limpiar(self):
         self._entry_obj.delete(0, "end")

@@ -32,8 +32,9 @@ class DosFases:
         resultado = solver.resolver()
     """
 
-    def __init__(self, problema: Problema) -> None:
+    def __init__(self, problema: Problema, modo_algebraico: bool = False) -> None:
         self.problema = problema
+        self.modo_algebraico = modo_algebraico
         self.resultado = Resultado(metodo="Dos Fases")
 
     def resolver(self) -> Resultado:
@@ -48,7 +49,7 @@ class DosFases:
 
         if not pe.tiene_artificiales:
             # Sin artificiales → usar Simplex directo
-            solver = AlgoritmoSimplex(self.problema)
+            solver = AlgoritmoSimplex(self.problema, modo_algebraico=self.modo_algebraico)
             return solver.resolver()
 
         # ─── FASE I ───────────────────────────────────────────────────────
@@ -274,6 +275,7 @@ class DosFases:
         it.cj = list(cj) + [0.0]
         it.variables_base = list(base_vars)
         it.coefs_base = list(base_coefs)
+        it.modo_algebraico = self.modo_algebraico
         return it
 
     def _calcular_zj_cjzj(self, tableau, cj, base_coefs, pe):
