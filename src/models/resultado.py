@@ -66,6 +66,17 @@ class Iteracion:
     explicacion: str = ""
     fase: Optional[int] = None
     modo_algebraico: bool = False
+    # Atributos extendidos para Simplex Revisado
+    es_revisado: bool = False
+    B_inv: List[List[float]] = field(default_factory=list)
+    x_B: List[float] = field(default_factory=list)
+    w_duales: List[float] = field(default_factory=list)
+    y_columna: List[float] = field(default_factory=list)
+    todas_variables: List[str] = field(default_factory=list)
+    cj_todas: List[float] = field(default_factory=list)
+    zj_todas: List[float] = field(default_factory=list)
+    c_barra_todas: List[float] = field(default_factory=list)
+    valor_z_actual: float = 0.0
 
 
 @dataclass

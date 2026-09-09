@@ -74,3 +74,22 @@ FONT_SIZE_XL  = 16
 FONT_SIZE_2XL = 20
 FONT_SIZE_3XL = 28
 FONT_SIZE_HERO= 40
+
+# ── Paleta Simplex Revisado (Indigo / Violeta Tecnológico) ──────────────────
+REVISADO_HEADER_BG = "#312E81"   # Indigo muy oscuro para encabezado principal
+REVISADO_HEADER_FG = "#FFFFFF"   # Blanco para texto de encabezado
+REVISADO_CARD_BG   = "#F5F3FF"   # Indigo muy claro para tarjetas
+REVISADO_BORDER    = "#C7D2FE"   # Borde indigo suave
+REVISADO_ACCENT    = "#4F46E5"   # Indigo vibrante
+REVISADO_DARK      = "#3730A3"   # Indigo oscuro
+REVISADO_LIGHT     = "#EEF2FF"   # Indigo claro
+REVISADO_TEXT      = "#1E1B4B"   # Texto oscuro indigo
+REVISADO_XB_BG     = "#E0E7FF"   # Fondo para columna x_B
+REVISADO_XB_FG     = "#3730A3"   # Texto para columna x_B
+REVISADO_Y_BG      = "#FEF3C7"   # Ámbar suave para columna y
+REVISADO_Y_FG      = "#92400E"   # Ámbar texto y
+REVISADO_THETA_BG  = "#FFEDD5"   # Naranja suave para razones mínimas
+REVISADO_THETA_FG  = "#9A3412"   # Naranja texto razones mínimas
+REVISADO_W_BG      = "#E0E7FF"   # Fondo multiplicadores duales
+REVISADO_W_FG      = "#312E81"   # Texto multiplicadores duales
+

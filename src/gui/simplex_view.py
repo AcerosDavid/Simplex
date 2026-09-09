@@ -10,6 +10,7 @@ from models.problema import Problema
 from algorithms.simplex import AlgoritmoSimplex
 from algorithms.dos_fases import DosFases
 from algorithms.gran_m import GranM
+from algorithms.simplex_revisado import SimplexRevisado
 from algorithms.forma_estandar import convertir_a_forma_estandar
 from gui.iteration_view import IterationView
 from gui.results_view import ResultsView
@@ -103,7 +104,9 @@ class SimplexView(ctk.CTkFrame):
 
         # Resolver
         modo_algebraico = (modo_simplex == "algebraico")
-        if pe.tiene_artificiales:
+        if metodo == "simplex_revisado":
+            solver = SimplexRevisado(problema)
+        elif pe.tiene_artificiales:
             if metodo == "gran_m":
                 solver = GranM(problema, modo_algebraico=modo_algebraico)
             else:

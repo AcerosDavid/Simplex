@@ -66,12 +66,26 @@ def ejemplo_5_dualidad() -> Problema:
     )
 
 
+def ejemplo_6_revisado() -> Problema:
+    """Ejemplo 6: Problema clásico para demostrar el Simplex Revisado."""
+    return parsear_problema_completo(
+        linea_objetivo="Max Z = 5x1 + 4x2 + 3x3",
+        lineas_restricciones=[
+            "6x1 + 4x2 + 2x3 <= 240",
+            "3x1 + 2x2 + 5x3 <= 270",
+            "5x1 + 6x2 + 5x3 <= 420",
+        ],
+        nombre="Ejemplo 6 — Simplex Revisado",
+    )
+
+
 EJEMPLOS = {
     "Ejemplo 1 — Simplex Básico": ejemplo_1_basico,
     "Ejemplo 2 — Dos Fases": ejemplo_2_dos_fases,
     "Ejemplo 3 — Igualdad": ejemplo_3_igualdad,
     "Ejemplo 4 — Minimización": ejemplo_4_minimizacion,
     "Ejemplo 5 — Dualidad": ejemplo_5_dualidad,
+    "Ejemplo 6 — Simplex Revisado": ejemplo_6_revisado,
 }
 
 

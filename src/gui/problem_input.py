@@ -119,7 +119,11 @@ class ProblemInputPanel(ctk.CTkFrame):
             text_color=TEXT_SECONDARY,
         ).pack(side="left", padx=(8, 10))
 
-        for texto, valor in [("Dos Fases", "dos_fases"), ("Gran M", "gran_m")]:
+        for texto, valor in [
+            ("Dos Fases", "dos_fases"),
+            ("Gran M", "gran_m"),
+            ("Simplex Revisado", "simplex_revisado"),
+        ]:
             ctk.CTkRadioButton(
                 met_frame, text=texto,
                 variable=self._metodo, value=valor,

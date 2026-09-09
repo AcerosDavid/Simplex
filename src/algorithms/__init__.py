@@ -5,3 +5,4 @@ from algorithms.simplex import AlgoritmoSimplex
 from algorithms.dos_fases import DosFases
 from algorithms.gran_m import GranM
 from algorithms.dualidad import AlgoritmoDualidad
+from algorithms.simplex_revisado import SimplexRevisado
